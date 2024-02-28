@@ -149,7 +149,17 @@ int main() {
     system(command);
   }
 
+  // swaylock red screens if called with system() and the terminal exits before
+  // logging back in, workaround until this issue can be figured out
   delwin(display);
+  erase();
+  int row, col;
+  const char *exitMsg = "Welcome back! Press any key to continue...";
+  getmaxyx(stdscr, row, col);
+  mvprintw(row / 2, (col - strlen(exitMsg)) / 2, "%s", exitMsg);
+  getch();
+
+  // delwin(display);
   endwin();
   freeConfig(&config);
   fclose(fp);
