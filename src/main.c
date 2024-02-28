@@ -33,8 +33,9 @@ WINDOW *createDisplay(Config *config) {
     }
   }
 
-  starty = (LINES - height) / 2;
-  startx = (COLS - width) / 2;
+  getmaxyx(stdscr, starty, startx);
+  starty = (starty - height) / 2;
+  startx = (startx - width) / 2;
   return newwin(height, width, starty, startx);
 }
 
@@ -102,7 +103,7 @@ int main() {
   }
 
   printf("\033]2;%s\a", PROGRAM_NAME);
-  printf("\033]30;%s\a", PROGRAM_NAME);
+  // printf("\033]30;%s\a", PROGRAM_NAME);
 
   initscr();
   use_default_colors();
@@ -127,13 +128,20 @@ int main() {
   setPreference(&config, display);
   printOptions(&config, display);
 
-  char opt;
+  int opt;
   char *command = NULL;
 
   while (!command) {
     opt = getch();
     if (opt == 27) {
       break;
+    }
+    if (opt == KEY_RESIZE) {
+      delwin(display);
+      erase();
+      display = createDisplay(&config);
+      setPreference(&config, display);
+      printOptions(&config, display);
     }
     command = getCommand(&config, opt);
   }
