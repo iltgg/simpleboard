@@ -15,6 +15,9 @@ install: $(EXECUTABLE)
 	mkdir -p ~/.config/simpleboard/
 	cp ./simpleboard.conf ~/.config/simpleboard/
 
+update: $(EXECUTABLE)
+	cp ./bin/simpleboard /usr/local/bin/
+
 uninstall:
 	rm /usr/local/bin/simpleboard
 
