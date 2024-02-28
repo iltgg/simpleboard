@@ -9,6 +9,14 @@
 const char *PROGRAM_NAME = "simpleboard";
 static int title = 1;
 
+void setup(Config *config) {
+  for (int i = 0; i < config->preferenceCount; i++) {
+    if (!strcmp(config->preference[i].key, "preCommand")) {
+      system(config->preference[i].value);
+    }
+  }
+}
+
 FILE *getConfigFile() {
   const char *CONFIG_PATH = "/.config/simpleboard/simpleboard.conf";
   const char *HOME = getenv("HOME");
@@ -110,6 +118,7 @@ int main() {
   noecho();
   curs_set(0);
   start_color();
+  setup(&config);
 
 #if DEBUG
   for (int i = 0; i < config.commandCount; i++) {
