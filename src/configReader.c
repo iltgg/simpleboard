@@ -6,20 +6,20 @@
 #define MAX_LINE 100
 const char HEADER = ':';
 const char COMMENT = '#';
-const char *APPEARANCE_STRING = "[appearance]";
-const char *COMMANDS_STRING = "[commands]";
+const char *PREFERENCE_STRING = "[appearance]";
+const char *COMMAND_STRING = "[commands]";
 
-int setHeader(char *line, enum ReadState *state) {
+static int setHeader(char *line, enum ReadState *state) {
   char cmpline[MAX_LINE];
   strcpy(cmpline, line + 1);
   cmpline[strlen(cmpline) - 1] = '\0';
 
-  if (!strcmp(cmpline, APPEARANCE_STRING)) {
-    *state = APPEARANCE;
+  if (!strcmp(cmpline, PREFERENCE_STRING)) {
+    *state = PREFERENCE;
     return 0;
   }
-  if (!strcmp(cmpline, COMMANDS_STRING)) {
-    *state = COMMANDS;
+  if (!strcmp(cmpline, COMMAND_STRING)) {
+    *state = COMMAND;
     return 0;
   }
 
@@ -27,21 +27,7 @@ int setHeader(char *line, enum ReadState *state) {
   return 1;
 }
 
-void setConfigPointer(int **count, Entry ***entry, Config *config,
-                      enum ReadState state) {
-  if (state == APPEARANCE) {
-    *count = &(config->appearanceCount);
-    *entry = &(config->appearance);
-  } else if (state == COMMANDS) {
-    *count = &(config->commandsCount);
-    *entry = &(config->commands);
-  } else {
-    *count = NULL;
-    *entry = NULL;
-  }
-}
-
-void removeTrailing(char *string) {
+static void removeTrailing(char *string) {
   int mark = -1;
   for (int i = 0; i < (int)strlen(string); i++) {
     if (string[i] == ' ' || string[i] == '\n' || string[i] == '\r' ||
@@ -56,11 +42,11 @@ void removeTrailing(char *string) {
   }
 }
 
-void addEntry(char *line, int *count, Entry **entries) {
+static void addBaseEntry(char *line, int *count, BaseEntry **entries) {
   if (*count == 0) {
-    *entries = malloc(sizeof(Entry));
+    *entries = malloc(sizeof(BaseEntry));
   } else {
-    *entries = realloc(*entries, sizeof(Entry) * (*count + 1));
+    *entries = realloc(*entries, sizeof(BaseEntry) * (*count + 1));
   }
 
   int i = 0;
@@ -90,23 +76,72 @@ void addEntry(char *line, int *count, Entry **entries) {
   (*entries + *count)->value = malloc(sizeof(char) * (strlen(value) + 1));
   strcpy((*entries + *count)->key, key);
   strcpy((*entries + *count)->value, value);
+  (*count)++;
+}
 
+static void addCommandEntry(char *line, int *count, CommandEntry **entry) {
+  if (*count == 0) {
+    *entry = malloc(sizeof(CommandEntry));
+  } else {
+    *entry = realloc(*entry, sizeof(CommandEntry) * (*count + 1));
+  }
+
+  int i = 0;
+  char name[MAX_LINE];
+  char command[MAX_LINE];
+  char hotkey[MAX_LINE];
+  while (*line != '=') {
+    name[i] = *line;
+    line++;
+    i++;
+  }
+  name[i] = '\0';
+  line++;
+  while (*line == ' ') {
+    line++;
+  }
+  removeTrailing(name);
+  i = 0;
+  while (*line != ',') {
+    command[i] = *line;
+    line++;
+    i++;
+  }
+  command[i] = '\0';
+  line++;
+  while (*line == ' ') {
+    line++;
+  }
+  removeTrailing(command);
+  i = 0;
+  while (*line != '\0') {
+    hotkey[i] = *line;
+    line++;
+    i++;
+  }
+  hotkey[i] = '\0';
+  removeTrailing(hotkey);
+
+  (*entry + *count)->name = malloc(sizeof(char) * (strlen(name) + 1));
+  (*entry + *count)->command = malloc(sizeof(char) * (strlen(command) + 1));
+  (*entry + *count)->hotkey = malloc(sizeof(char) * (strlen(hotkey) + 1));
+  strcpy((*entry + *count)->name, name);
+  strcpy((*entry + *count)->command, command);
+  strcpy((*entry + *count)->hotkey, hotkey);
   (*count)++;
 }
 
 int readConfig(FILE *fp, Config *config) {
   char line[MAX_LINE];
-  int *curCount = NULL;
-  Entry **curEntry = NULL;
-  enum ReadState state = NONE;
+  enum ReadState curState = NONE;
 
   if (fp == NULL) {
-    puts("readConfig: invalid file pointer");
+    puts("readConfig: invalid file pointer, does the config file exist?");
     return 1;
   }
 
-  config->appearanceCount = 0;
-  config->commandsCount = 0;
+  config->preferenceCount = 0;
+  config->commandCount = 0;
 
   while (fgets(line, 100, fp) != NULL) {
     if (line[0] == '\n' || line[0] == '\r') {
@@ -116,51 +151,39 @@ int readConfig(FILE *fp, Config *config) {
       continue;
     }
     if (line[0] == HEADER) {
-      setHeader(line, &state);
-      setConfigPointer(&curCount, &curEntry, config, state);
+      setHeader(line, &curState);
       continue;
     }
-    if (curCount == NULL || curEntry == NULL) {
+    if (curState == NONE) {
       puts("readConfig: no header given");
       continue;
     }
-    addEntry(line, curCount, curEntry);
+    switch (curState) {
+    case PREFERENCE:
+      addBaseEntry(line, &(config->preferenceCount), &(config->preference));
+      break;
+    case COMMAND:
+      addCommandEntry(line, &(config->commandCount), &(config->command));
+      break;
+    case NONE:
+    default:
+      break;
+    }
   }
 
   return 0;
 }
 
 void freeConfig(Config *config) {
-  for (int i = 0; i < config->appearanceCount; i++) {
-    free(config->appearance[i].key);
-    free(config->appearance[i].value);
+  for (int i = 0; i < config->preferenceCount; i++) {
+    free(config->preference[i].key);
+    free(config->preference[i].value);
   }
-  for (int i = 0; i < config->commandsCount; i++) {
-    free(config->commands[i].key);
-    free(config->commands[i].value);
+  for (int i = 0; i < config->commandCount; i++) {
+    free(config->command[i].name);
+    free(config->command[i].command);
+    free(config->command[i].hotkey);
   }
-  free(config->appearance);
-  free(config->commands);
+  free(config->preference);
+  free(config->command);
 }
-
-// int main() {
-//   FILE *fptr;
-//   Config config;
-//
-//   fptr = fopen("gusboard.conf", "r");
-//
-//   readConfig(fptr, &config);
-//   printf("%d\n", config.appearanceCount);
-//   printf("%d\n", config.commandsCount);
-//   for (int i = 0; i < config.appearanceCount; i++) {
-//     printf("%s: %s\n", config.appearance[i].key, config.appearance[i].value);
-//   }
-//   for (int i = 0; i < config.commandsCount; i++) {
-//     printf("%s: %s\n", config.commands[i].key, config.commands[i].value);
-//   }
-//
-//   fclose(fptr);
-//   freeConfig(&config);
-//
-//   return EXIT_SUCCESS;
-// }

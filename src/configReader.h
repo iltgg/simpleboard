@@ -3,19 +3,25 @@
 
 #include <stdio.h>
 
-typedef struct Entry {
+typedef struct BaseEntry {
   char *key;
   char *value;
-} Entry;
+} BaseEntry;
+
+typedef struct CommandEntry {
+  char *name;
+  char *command;
+  char *hotkey;
+} CommandEntry;
 
 typedef struct Config {
-  int appearanceCount;
-  int commandsCount;
-  Entry *appearance;
-  Entry *commands;
+  int preferenceCount;
+  int commandCount;
+  BaseEntry *preference;
+  CommandEntry *command;
 } Config;
 
-enum ReadState { APPEARANCE, COMMANDS, NONE };
+enum ReadState { PREFERENCE, COMMAND, NONE };
 
 int readConfig(FILE *fp, Config *config);
 void freeConfig(Config *config);
