@@ -6,8 +6,9 @@
 
 #define DEBUG 0
 
-const char *PROGRAM_NAME = "simpleboard";
+static const char *DEFAULT_NAME = "simpleboard";
 static int title = 1;
+static char *titleOverride = NULL;
 
 void setup(Config *config) {
   for (int i = 0; i < config->preferenceCount; i++) {
@@ -63,8 +64,7 @@ void setPreference(Config *config, WINDOW *display) {
       } else if (!strcmp(config->preference[i].value, "magenta")) {
         init_pair(2, COLOR_MAGENTA, -1);
       }
-    }
-    if (!strcmp(config->preference[i].key, "titleColor")) {
+    } else if (!strcmp(config->preference[i].key, "titleColor")) {
       if (!strcmp(config->preference[i].value, "blue")) {
         init_pair(1, COLOR_BLUE, -1);
       } else if (!strcmp(config->preference[i].value, "red")) {
@@ -74,9 +74,10 @@ void setPreference(Config *config, WINDOW *display) {
       } else if (!strcmp(config->preference[i].value, "magenta")) {
         init_pair(1, COLOR_MAGENTA, -1);
       }
-    }
-    if (!strcmp(config->preference[i].key, "title")) {
+    } else if (!strcmp(config->preference[i].key, "title")) {
       title = atoi(config->preference[i].value);
+    } else if (!strcmp(config->preference[i].key, "titleOverride")) {
+      titleOverride = config->preference[i].value;
     }
   }
 }
@@ -84,7 +85,11 @@ void setPreference(Config *config, WINDOW *display) {
 void printOptions(Config *config, WINDOW *display) {
   if (title) {
     wattron(display, COLOR_PAIR(1));
-    mvwprintw(display, 0, 1, "simpleboard");
+    if (titleOverride) {
+      mvwprintw(display, 0, 1, "%s", titleOverride);
+    } else {
+      mvwprintw(display, 0, 1, "simpleboard");
+    }
   }
   wattron(display, COLOR_PAIR(2));
   for (int i = 0; i < config->commandCount; i++) {
@@ -110,7 +115,7 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  printf("\033]2;%s\a", PROGRAM_NAME);
+  printf("\033]2;%s\a", DEFAULT_NAME);
 
   initscr();
   use_default_colors();
