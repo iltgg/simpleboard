@@ -164,9 +164,9 @@ int main() {
   if (command) {
     // some commands will output causing ncurses to read chars
     // send all output to null
-    char noOutput[MAX_LINE + 20] = "bash -c ";
+    char noOutput[MAX_LINE + 20] = "bash -c \"";
     strcat(noOutput, command->command);
-    strcat(noOutput, " >/dev/null 2>&1");
+    strcat(noOutput, "\" >/dev/null 2>&1");
 
     system(noOutput);
     if (!strcmp(command->misc, "stay_alive")) {
