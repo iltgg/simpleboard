@@ -6,7 +6,7 @@ Configurable ncurses based tui dashboard for systems like a power menu or contro
 
 ## Installation
 
-1. ncurses is a required system dependency
+1. dependencies: `c standard library, ncurses, bash`
 2. run `sudo make install`
 
 ## Uninstallation
@@ -30,11 +30,19 @@ height = 10        (box height)
 width = 20         (box widht)
 title = 1          (show title 0 = false)
 titleColor = red   (title color)
-preCommnad =       (system command to run before showing anything)
+preCommand =       (system command to run before showing anything)
 
 :[commands]
-{command display name} = {system command}, {hotkey}
+{command display name} = {system command}, {hotkey}, {misc}
+
+# Comments with #, must be newline
 ```
+
+### Swaylock
+
+If `daemonize` is in swaylock config or `-f` argument is passed, swaylock will red screen if terminal is closed while swaylock is running (do not know why).
+
+Pass `stay_alive` misc argument in `simpleboard.conf` to keep terminal open after executing command.
 
 ### Hyprland Window Rules
 

@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 
+#define MAX_LINE 100
+
 typedef struct BaseEntry {
   char *key;
   char *value;
@@ -12,6 +14,7 @@ typedef struct CommandEntry {
   char *name;
   char *command;
   char *hotkey;
+  char *misc;
 } CommandEntry;
 
 typedef struct Config {

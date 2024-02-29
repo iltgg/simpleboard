@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_LINE 100
 const char HEADER = ':';
 const char COMMENT = '#';
 const char *PREFERENCE_STRING = "[appearance]";
@@ -90,6 +89,7 @@ static void addCommandEntry(char *line, int *count, CommandEntry **entry) {
   char name[MAX_LINE];
   char command[MAX_LINE];
   char hotkey[MAX_LINE];
+  char misc[MAX_LINE] = ""; // or else behaviour is weird, pointers idk
   while (*line != '=') {
     name[i] = *line;
     line++;
@@ -114,20 +114,36 @@ static void addCommandEntry(char *line, int *count, CommandEntry **entry) {
   }
   removeTrailing(command);
   i = 0;
-  while (*line != '\0') {
+  while (*line != '\0' && *line != ',') {
     hotkey[i] = *line;
     line++;
     i++;
   }
   hotkey[i] = '\0';
   removeTrailing(hotkey);
+  if (*line == ',') {
+    line++;
+    while (*line == ' ') {
+      line++;
+    }
+    i = 0;
+    while (*line != '\0') {
+      misc[i] = *line;
+      line++;
+      i++;
+    }
+    misc[i] = '\0';
+    removeTrailing(misc);
+  }
 
   (*entry + *count)->name = malloc(sizeof(char) * (strlen(name) + 1));
   (*entry + *count)->command = malloc(sizeof(char) * (strlen(command) + 1));
   (*entry + *count)->hotkey = malloc(sizeof(char) * (strlen(hotkey) + 1));
+  (*entry + *count)->misc = malloc(sizeof(char) * (strlen(misc) + 1));
   strcpy((*entry + *count)->name, name);
   strcpy((*entry + *count)->command, command);
   strcpy((*entry + *count)->hotkey, hotkey);
+  strcpy((*entry + *count)->misc, misc);
   (*count)++;
 }
 
@@ -183,6 +199,7 @@ void freeConfig(Config *config) {
     free(config->command[i].name);
     free(config->command[i].command);
     free(config->command[i].hotkey);
+    free(config->command[i].misc);
   }
   free(config->preference);
   free(config->command);
