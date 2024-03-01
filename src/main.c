@@ -32,6 +32,9 @@ FILE *getConfigFile() {
 WINDOW *createDisplay(Config *config) {
   int height = 10;
   int width = 20;
+  int dynamicHeight = 0;
+  int dynamicWidth = 0;
+  int dynamicWidthMin = 0;
   int startx, starty;
 
   for (int i = 0; i < config->preferenceCount; i++) {
@@ -39,7 +42,34 @@ WINDOW *createDisplay(Config *config) {
       width = atoi(config->preference[i].value);
     } else if (!strcmp(config->preference[i].key, "height")) {
       height = atoi(config->preference[i].value);
+    } else if (!strcmp(config->preference[i].key, "dynamicHeight")) {
+      dynamicHeight = atoi(config->preference[i].value);
+    } else if (!strcmp(config->preference[i].key, "dynamicWidth")) {
+      dynamicWidth = atoi(config->preference[i].value);
+    } else if (!strcmp(config->preference[i].key, "dynamicWidthMin")) {
+      dynamicWidthMin = atoi(config->preference[i].value);
     }
+  }
+  if (dynamicHeight) {
+    height = config->commandCount + 2;
+  }
+  if (dynamicWidth) {
+    int maxWidth = dynamicWidthMin;
+    for (int i = 0; i < config->preferenceCount; i++) {
+      if (!strcmp(config->preference[i].key, "titleOverride")) {
+        int len = strlen(config->preference[i].value);
+        if (len > maxWidth) {
+          maxWidth = len;
+        }
+      }
+    }
+    for (int i = 0; i < config->commandCount; i++) {
+      int len = strlen(config->command[i].name);
+      if (len > maxWidth) {
+        maxWidth = len;
+      }
+    }
+    width = maxWidth + 2;
   }
 
   getmaxyx(stdscr, starty, startx);
@@ -78,6 +108,10 @@ void setPreference(Config *config, WINDOW *display) {
       title = atoi(config->preference[i].value);
     } else if (!strcmp(config->preference[i].key, "titleOverride")) {
       titleOverride = config->preference[i].value;
+    } else if (!strcmp(config->preference[i].key, "border")) {
+      if (!strcmp(config->preference[i].value, "0")) {
+        wborder(display, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ');
+      }
     }
   }
 }

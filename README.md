@@ -23,14 +23,19 @@ Config file location: `~/.config/gusboard/simpleboard.conf`
 
 ```
 # Default values provided
+# 0 = false, 1 = true
 
 :[appearance]
-color = blue       (text color)
-height = 10        (box height)
-width = 20         (box widht)
-title = 1          (show title 0 = false)
-titleColor = red   (title color)
-preCommand =       (system command to run before showing anything)
+color = blue         (text color)
+height = 10          (box height)
+width = 20           (box width)
+dynamicHeight = 0    (determined from # commands)
+dynamicWidth = 0     (determined from max command name len)
+dynamicWidthMin = 0  (min width if dynamicWidth = 1)
+title = 1            (show title 0 = false)
+titleColor = red     (title color)
+border = 0           (window border)
+preCommand =         (system command to run before showing anything)
 
 :[commands]
 {command display name} = {system command}, {hotkey}, {misc}
