@@ -4,11 +4,18 @@
 #include <stdio.h>
 
 #define MAX_LINE 100
-
-typedef struct BaseEntry {
-  char *key;
-  char *value;
-} BaseEntry;
+#define INIT_CONIFG(C)                                                         \
+  Config C = {.command.count = 0,                                              \
+              .preference.color = "blue",                                      \
+              .preference.height = 10,                                         \
+              .preference.width = 20,                                          \
+              .preference.dynamicHeight = 0,                                   \
+              .preference.dynamicWidth = 0,                                    \
+              .preference.dynamicWidthMin = 0,                                 \
+              .preference.title = 1,                                           \
+              .preference.titleColor = "red",                                  \
+              .preference.border = 1,                                          \
+              .preference.preCommand = ""}
 
 typedef struct CommandEntry {
   char *name;
@@ -17,11 +24,27 @@ typedef struct CommandEntry {
   char *misc;
 } CommandEntry;
 
+typedef struct PreferenceConfig {
+  char color[MAX_LINE];
+  int height;
+  int width;
+  int dynamicHeight;
+  int dynamicWidth;
+  int dynamicWidthMin;
+  char title[MAX_LINE];
+  char titleColor[MAX_LINE];
+  int border;
+  char preCommand[MAX_LINE];
+} PreferenceConfig;
+
+typedef struct CommandConfig {
+  int count;
+  CommandEntry *commands;
+} CommandConfig;
+
 typedef struct Config {
-  int preferenceCount;
-  int commandCount;
-  BaseEntry *preference;
-  CommandEntry *command;
+  CommandConfig command;
+  PreferenceConfig preference;
 } Config;
 
 enum ReadState { PREFERENCE, COMMAND, NONE };
