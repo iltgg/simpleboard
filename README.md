@@ -2,12 +2,16 @@
 
 Configurable ncurses based TUI dashboard for systems like a power menu or controlling monitors.
 
-![simpleboard](/simpleboard.jpg?raw=true)
+![Screenshot of simpleboard utility](/simpleboard.jpg?raw=true)
 
 ## Installation
 
 1. dependencies: `c standard library, ncurses, bash`
 2. run `sudo make install`
+
+## Updating
+
+1. run `sudo make update`
 
 ## Uninstallation
 
