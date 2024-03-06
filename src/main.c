@@ -4,9 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define DEBUG 0
-#define DEBUG_CONF 0
-
 static const char *DEFAULT_NAME = "simpleboard";
 
 void setup(Config *config) {
@@ -16,9 +13,6 @@ void setup(Config *config) {
 }
 
 FILE *getConfigFile() {
-#if DEBUG_CONF == 1
-  return fopen("./simpleboard.conf", "r");
-#else
   const char *CONFIG_PATH = "/.config/simpleboard/simpleboard.conf";
   const char *HOME = getenv("HOME");
   char path[100];
@@ -27,7 +21,6 @@ FILE *getConfigFile() {
   strcpy(path + strlen(path), CONFIG_PATH);
 
   return fopen(path, "r");
-#endif
 }
 
 WINDOW *createDisplay(Config *config) {
@@ -126,20 +119,6 @@ int main() {
   curs_set(0);
   start_color();
   setup(&config);
-
-#if DEBUG
-  printw("Commands:\n");
-  for (int i = 0; i < config.command.count; i++) {
-    printw("%s = %s, %s, %s\n", config.command.commands[i].name,
-           config.command.commands[i].command,
-           config.command.commands[i].hotkey, config.command.commands[i].misc);
-  }
-  printw("Preferences:\n");
-  printw("%s", config.preference.title);
-  refresh();
-  getch();
-  clear();
-#endif
 
   WINDOW *display = createDisplay(&config);
   setPreference(&config, display);

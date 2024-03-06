@@ -71,6 +71,8 @@ windowrule=animation slide,title:^(simpleboard)$
 
 `make` will output `./bin/simpleboard`, keep in mind behavior will be slightly different when running from a terminal that closes after execution or not.
 
-## Testing
+## Testing and Debugging
+
+`make debug` will output `./bin/simpleboard_debug`, which is compiled with the `-g`flag
 
 `make test` will output `./bin/test`, unit tests created using the [acutest](https://github.com/mity/acutest) framework.
