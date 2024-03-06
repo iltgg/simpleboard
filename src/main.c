@@ -146,6 +146,7 @@ int main() {
   FILE *fp = getConfigFile();
   Config config;
   if (readConfig(fp, &config)) {
+    puts("readConfig: invalid file pointer, does the config file exist?");
     return EXIT_FAILURE;
   }
 

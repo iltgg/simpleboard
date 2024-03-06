@@ -162,7 +162,6 @@ int readConfig(FILE *fp, Config *config) {
   enum ReadState curState = NONE;
 
   if (fp == NULL) {
-    puts("readConfig: invalid file pointer, does the config file exist?");
     return 1;
   }
 
@@ -206,9 +205,4 @@ void freeConfig(Config *config) {
     free(config->command.commands[i].hotkey);
     free(config->command.commands[i].misc);
   }
-}
-
-int main() {
-  INIT_CONIFG(config);
-  puts(config.preference.color);
 }

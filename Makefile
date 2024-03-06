@@ -21,5 +21,5 @@ update: $(EXECUTABLE)
 uninstall:
 	rm /usr/local/bin/simpleboard
 
-test: ./src/configReader.c | bin
-	$(C) -o ./bin/test ./src/configReader.c $(CFLAGS) $(EFLAGS)
+test: ./tests/readConfig_test.c ./src/configReader.c | bin
+	$(C) -o ./bin/test ./tests/readConfig_test.c ./src/configReader.c $(CFLAGS) $(EFLAGS)

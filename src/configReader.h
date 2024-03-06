@@ -12,7 +12,7 @@
               .preference.dynamicHeight = 0,                                   \
               .preference.dynamicWidth = 0,                                    \
               .preference.dynamicWidthMin = 0,                                 \
-              .preference.title = 1,                                           \
+              .preference.title = "simpleboard",                               \
               .preference.titleColor = "red",                                  \
               .preference.border = 1,                                          \
               .preference.preCommand = ""}
