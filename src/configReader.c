@@ -41,13 +41,7 @@ static void removeTrailing(char *string) {
   }
 }
 
-static void addBaseEntry(char *line, int *count, BaseEntry **entries) {
-  if (*count == 0) {
-    *entries = malloc(sizeof(BaseEntry));
-  } else {
-    *entries = realloc(*entries, sizeof(BaseEntry) * (*count + 1));
-  }
-
+static void addPreference(char *line, PreferenceConfig *pref) {
   int i = 0;
   char key[MAX_LINE];
   char value[MAX_LINE];
@@ -71,14 +65,30 @@ static void addBaseEntry(char *line, int *count, BaseEntry **entries) {
   value[i] = '\0';
   removeTrailing(value);
 
-  (*entries + *count)->key = malloc(sizeof(char) * (strlen(key) + 1));
-  (*entries + *count)->value = malloc(sizeof(char) * (strlen(value) + 1));
-  strcpy((*entries + *count)->key, key);
-  strcpy((*entries + *count)->value, value);
-  (*count)++;
+  if (!strcmp(key, "color")) {
+    strcpy(pref->color, value);
+  } else if (!strcmp(key, "height")) {
+    pref->height = atoi(value);
+  } else if (!strcmp(key, "width")) {
+    pref->width = atoi(value);
+  } else if (!strcmp(key, "dynamicHeight")) {
+    pref->dynamicHeight = atoi(value);
+  } else if (!strcmp(key, "dynamicWidth")) {
+    pref->dynamicWidth = atoi(value);
+  } else if (!strcmp(key, "dynamicWidthMin")) {
+    pref->dynamicWidthMin = atoi(value);
+  } else if (!strcmp(key, "title")) {
+    strcpy(pref->title, value);
+  } else if (!strcmp(key, "titleColor")) {
+    strcpy(pref->titleColor, value);
+  } else if (!strcmp(key, "border")) {
+    pref->border = atoi(value);
+  } else if (!strcmp(key, "preCommand")) {
+    strcpy(pref->preCommand, value);
+  }
 }
 
-static void addCommandEntry(char *line, int *count, CommandEntry **entry) {
+static void addCommand(char *line, int *count, CommandEntry **entry) {
   if (*count == 0) {
     *entry = malloc(sizeof(CommandEntry));
   } else {
@@ -152,12 +162,10 @@ int readConfig(FILE *fp, Config *config) {
   enum ReadState curState = NONE;
 
   if (fp == NULL) {
-    puts("readConfig: invalid file pointer, does the config file exist?");
     return 1;
   }
 
-  config->preferenceCount = 0;
-  config->commandCount = 0;
+  config->command.count = 0;
 
   while (fgets(line, 100, fp) != NULL) {
     if (line[0] == '\n' || line[0] == '\r') {
@@ -176,10 +184,10 @@ int readConfig(FILE *fp, Config *config) {
     }
     switch (curState) {
     case PREFERENCE:
-      addBaseEntry(line, &(config->preferenceCount), &(config->preference));
+      addPreference(line, &(config->preference));
       break;
     case COMMAND:
-      addCommandEntry(line, &(config->commandCount), &(config->command));
+      addCommand(line, &(config->command.count), &(config->command.commands));
       break;
     case NONE:
     default:
@@ -191,16 +199,10 @@ int readConfig(FILE *fp, Config *config) {
 }
 
 void freeConfig(Config *config) {
-  for (int i = 0; i < config->preferenceCount; i++) {
-    free(config->preference[i].key);
-    free(config->preference[i].value);
+  for (int i = 0; i < config->command.count; i++) {
+    free(config->command.commands[i].name);
+    free(config->command.commands[i].command);
+    free(config->command.commands[i].hotkey);
+    free(config->command.commands[i].misc);
   }
-  for (int i = 0; i < config->commandCount; i++) {
-    free(config->command[i].name);
-    free(config->command[i].command);
-    free(config->command[i].hotkey);
-    free(config->command[i].misc);
-  }
-  free(config->preference);
-  free(config->command);
 }

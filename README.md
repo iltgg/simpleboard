@@ -1,13 +1,17 @@
 # simpleboard
 
-Configurable ncurses based tui dashboard for systems like a power menu or controlling monitors.
+Configurable ncurses based TUI dashboard for systems like a power menu or controlling monitors.
 
-![simpleboard](/simpleboard.jpg?raw=true)
+![Screenshot of simpleboard utility](/simpleboard.jpg?raw=true)
 
 ## Installation
 
 1. dependencies: `c standard library, ncurses, bash`
 2. run `sudo make install`
+
+## Updating
+
+1. run `sudo make update`
 
 ## Uninstallation
 
@@ -32,9 +36,9 @@ width = 20           (box width)
 dynamicHeight = 0    (determined from # commands)
 dynamicWidth = 0     (determined from max command name len)
 dynamicWidthMin = 0  (min width if dynamicWidth = 1)
-title = 1            (show title 0 = false)
+title = simpleboard  (empty field will show no title)
 titleColor = red     (title color)
-border = 0           (window border)
+border = 1           (window border)
 preCommand =         (system command to run before showing anything)
 
 :[commands]
@@ -62,3 +66,11 @@ windowrule=move 0% 0%,title:^(simpleboard)$
 windowrule=animation slide,title:^(simpleboard)$
 
 ```
+
+## Building
+
+`make` will output `./bin/simpleboard`, keep in mind behavior will be slightly different when running from a terminal that closes after execution or not.
+
+## Testing
+
+`make test` will output `./bin/test`, unit tests created using the [acutest](https://github.com/mity/acutest) framework.
