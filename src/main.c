@@ -12,7 +12,7 @@ void setup(Config *config) {
   }
 }
 
-FILE *getConfigFile() {
+FILE *getUserConfig() {
   const char *CONFIG_PATH = "/.config/simpleboard/simpleboard.conf";
   const char *HOME = getenv("HOME");
   char path[100];
@@ -103,8 +103,28 @@ CommandEntry *getCommand(Config *config, char key) {
   return NULL;
 }
 
-int main() {
-  FILE *fp = getConfigFile();
+int main(int argc, char *argv[]) {
+  char *configFile = NULL;
+  for (int i = 1; i < argc; i++) {
+    if (!strcmp(argv[i], "--config") || !strcmp(argv[i], "-c")) {
+      i++;
+      configFile = argv[i];
+    }
+    if (!strcmp(argv[i], "--help") || !strcmp(argv[i], "-h")) {
+      puts("Usage:\n  simpleboard [option(s)]\n\nOptions:\n  -h, --help\n    "
+           "print help screen\n  -c, --config [dir]\n    specify a path to a "
+           "config file to use");
+      return EXIT_SUCCESS;
+    }
+  }
+
+  FILE *fp;
+  if (configFile == NULL) {
+    fp = getUserConfig();
+  } else {
+    fp = fopen(configFile, "r");
+  }
+
   INIT_CONIFG(config);
   if (readConfig(fp, &config)) {
     puts("readConfig: invalid file pointer, does the config file exist?");
