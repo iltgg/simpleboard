@@ -88,6 +88,27 @@ static void addPreference(char *line, PreferenceConfig *pref) {
   }
 }
 
+static int getNext(char **line, char *token) {
+  int i = 0;
+  while (**line == ' ') {
+    (*line)++;
+  }
+  while (**line != ',' && **line != '\0') {
+    token[i] = **line;
+    (*line)++;
+    i++;
+  }
+  token[i] = '\0';
+  removeTrailing(token);
+
+  if (**line == '\0') {
+    return 1;
+  }
+
+  (*line)++;
+  return 0;
+}
+
 static void addCommand(char *line, int *count, CommandEntry **entry) {
   if (*count == 0) {
     *entry = malloc(sizeof(CommandEntry));
@@ -100,6 +121,7 @@ static void addCommand(char *line, int *count, CommandEntry **entry) {
   char command[MAX_LINE];
   char hotkey[MAX_LINE];
   char misc[MAX_LINE] = ""; // or else behaviour is weird, pointers idk
+
   while (*line != '=') {
     name[i] = *line;
     line++;
@@ -107,43 +129,11 @@ static void addCommand(char *line, int *count, CommandEntry **entry) {
   }
   name[i] = '\0';
   line++;
-  while (*line == ' ') {
-    line++;
-  }
+
   removeTrailing(name);
-  i = 0;
-  while (*line != ',') {
-    command[i] = *line;
-    line++;
-    i++;
-  }
-  command[i] = '\0';
-  line++;
-  while (*line == ' ') {
-    line++;
-  }
-  removeTrailing(command);
-  i = 0;
-  while (*line != '\0' && *line != ',') {
-    hotkey[i] = *line;
-    line++;
-    i++;
-  }
-  hotkey[i] = '\0';
-  removeTrailing(hotkey);
-  if (*line == ',') {
-    line++;
-    while (*line == ' ') {
-      line++;
-    }
-    i = 0;
-    while (*line != '\0') {
-      misc[i] = *line;
-      line++;
-      i++;
-    }
-    misc[i] = '\0';
-    removeTrailing(misc);
+  getNext(&line, command);
+  if (!getNext(&line, hotkey)) {
+    getNext(&line, misc);
   }
 
   (*entry + *count)->name = malloc(sizeof(char) * (strlen(name) + 1));
