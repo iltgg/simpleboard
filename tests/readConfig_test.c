@@ -92,6 +92,40 @@ void customConfig(void) {
   freeConfig(&config);
 }
 
+void parsingConfig(void) {
+  FILE *fp = fopen("./tests/configs/parsing.conf", "r");
+  INIT_CONIFG(config);
+  readConfig(fp, &config);
+
+  TEST_CHECK(config.command.count == 3);
+  TEST_CHECK(!strcmp(config.preference.color, "green"));
+  TEST_CHECK(config.preference.height == 11);
+  TEST_CHECK(config.preference.width == 21);
+  TEST_CHECK(config.preference.dynamicHeight == 1);
+  TEST_CHECK(config.preference.dynamicWidth == 1);
+  TEST_CHECK(config.preference.dynamicWidthMin == 1);
+  TEST_CHECK(!strcmp(config.preference.title, "custom_title"));
+  TEST_CHECK(!strcmp(config.preference.titleColor, "blue"));
+  TEST_CHECK(config.preference.border == 1);
+  TEST_CHECK(!strcmp(config.preference.preCommand, "echo test"));
+
+  TEST_CHECK(!strcmp(config.command.commands[0].name, "foo"));
+  TEST_CHECK(!strcmp(config.command.commands[0].command, "echo \"foo,foo\""));
+  TEST_CHECK(!strcmp(config.command.commands[0].hotkey, "f"));
+  TEST_CHECK(!strcmp(config.command.commands[0].misc, ""));
+  TEST_CHECK(!strcmp(config.command.commands[1].name, "bar"));
+  TEST_CHECK(!strcmp(config.command.commands[1].command, "echo bar"));
+  TEST_CHECK(!strcmp(config.command.commands[1].hotkey, "b"));
+  TEST_CHECK(!strcmp(config.command.commands[1].misc, "stay_alive"));
+  TEST_CHECK(!strcmp(config.command.commands[2].name, "foobar"));
+  TEST_CHECK(
+      !strcmp(config.command.commands[2].command, "echo \"bar,,,,,fooo####\""));
+  TEST_CHECK(!strcmp(config.command.commands[2].hotkey, "p"));
+  TEST_CHECK(!strcmp(config.command.commands[2].misc, "stay_alive"));
+
+  freeConfig(&config);
+}
+
 // TODO
 void errorConfig(void) {
   FILE *fp = fopen("./tests/configs/error.conf", "r");
@@ -101,8 +135,6 @@ void errorConfig(void) {
   freeConfig(&config);
 }
 
-TEST_LIST = {{"Default Config", defaultConfig},
-             {"Empty Config", emptyConfig},
-             {"Missing Config", missingConfig},
-             {"Custom Config", customConfig},
-             {NULL, NULL}};
+TEST_LIST = {{"Default Config", defaultConfig}, {"Empty Config", emptyConfig},
+             {"Missing Config", missingConfig}, {"Custom Config", customConfig},
+             {"Parsing Config", parsingConfig}, {NULL, NULL}};

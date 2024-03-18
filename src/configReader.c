@@ -1,4 +1,5 @@
 #include "configReader.h"
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -90,10 +91,15 @@ static void addPreference(char *line, PreferenceConfig *pref) {
 
 static int getNext(char **line, char *token) {
   int i = 0;
+  bool escaped = false;
+
   while (**line == ' ') {
     (*line)++;
   }
-  while (**line != ',' && **line != '\0') {
+  while (escaped == true || (**line != ',' && **line != '\0')) {
+    if (**line == '\"') {
+      escaped = !escaped;
+    }
     token[i] = **line;
     (*line)++;
     i++;
