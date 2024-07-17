@@ -55,17 +55,13 @@ Pass `stay_alive` misc argument in `simpleboard.conf` to keep terminal open afte
 
 ### Hyprland Window Rules
 
-Will make dashboard take up the entire screen when called with `exec kitty -e simpleboard` (or equivalent)
+To launch `simpleboard` as full screen in `Hyprland` the following command can be used:
 
+```sh
+hyprctl dispatch exec "[size 100% 100%; float; move 0% 0%; animation slide]" "kitty -e simpleboard"
 ```
-windowrule=nomaximizerequest,title:^(simpleboard)$
-windowrule=nofullscreenrequest,title:^(simpleboard)$
-windowrule=size 100% 100%,title:^(simpleboard)$
-windowrule=float,title:^(simpleboard)$
-windowrule=move 0% 0%,title:^(simpleboard)$
-windowrule=animation slide,title:^(simpleboard)$
 
-```
+In my testing terminal based applications seem to not work with static window rules. As terminal apps set window titles after process creation, `Hyprland` will not apply window rules to them.
 
 ## Building
 
