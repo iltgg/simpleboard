@@ -150,6 +150,7 @@ static void addCommand(char *line, int *count, CommandEntry **entry) {
   strcpy((*entry + *count)->command, command);
   strcpy((*entry + *count)->hotkey, hotkey);
   strcpy((*entry + *count)->misc, misc);
+  (*entry + *count)->commandLength = strlen(name);
   (*count)++;
 }
 

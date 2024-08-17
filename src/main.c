@@ -87,7 +87,12 @@ void printOptions(Config *config, WINDOW *display) {
   wattron(display, COLOR_PAIR(1));
   mvwprintw(display, 0, 1, "%s", config->preference.title);
   wattron(display, COLOR_PAIR(2));
+
+  int starty, startx;
+  getbegyx(display, starty, startx);
   for (int i = 0; i < config->command.count; i++) {
+    config->command.commands[i].y = starty + i + 1;
+    config->command.commands[i].x = startx + 1;
     mvwprintw(display, i + 1, 1, "%s", config->command.commands[i].name);
   }
   refresh();
@@ -97,6 +102,18 @@ void printOptions(Config *config, WINDOW *display) {
 CommandEntry *getCommand(Config *config, char key) {
   for (int i = 0; i < config->command.count; i++) {
     if (config->command.commands[i].hotkey[0] == key) {
+      return config->command.commands + i;
+    }
+  }
+  return NULL;
+}
+
+CommandEntry *getCommandMouse(Config *config, int y, int x) {
+  for (int i = 0; i < config->command.count; i++) {
+    if (config->command.commands[i].y == y &&
+        x >= config->command.commands[i].x &&
+        x < config->command.commands[i].x +
+                config->command.commands[i].commandLength) {
       return config->command.commands + i;
     }
   }
@@ -144,22 +161,38 @@ int main(int argc, char *argv[]) {
   setPreference(&config, display);
   printOptions(&config, display);
 
+  MEVENT mevent;
+  keypad(display, TRUE);
+  mousemask(ALL_MOUSE_EVENTS, NULL);
+
   int opt;
   CommandEntry *command = NULL;
 
   while (!command) {
-    opt = getch();
+    opt = wgetch(display);
     if (opt == 27) {
       break;
     }
-    if (opt == KEY_RESIZE) {
+    switch (opt) {
+    case KEY_RESIZE:
       delwin(display);
       clear();
       display = createDisplay(&config);
       setPreference(&config, display);
       printOptions(&config, display);
+      break;
+
+    case KEY_MOUSE:
+      if (getmouse(&mevent) == OK) {
+        if (mevent.bstate & BUTTON1_CLICKED) {
+          command = getCommandMouse(&config, mevent.y, mevent.x);
+        }
+      }
+      break;
+
+    default:
+      command = getCommand(&config, opt);
     }
-    command = getCommand(&config, opt);
   }
   if (command) {
     // some commands will output causing ncurses to read chars

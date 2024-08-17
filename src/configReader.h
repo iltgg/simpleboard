@@ -22,6 +22,9 @@ typedef struct CommandEntry {
   char *command;
   char *hotkey;
   char *misc;
+  int commandLength;
+  int x;
+  int y;
 } CommandEntry;
 
 typedef struct PreferenceConfig {
