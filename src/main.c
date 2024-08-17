@@ -164,11 +164,18 @@ int main(int argc, char *argv[]) {
   MEVENT mevent;
   keypad(display, TRUE);
   mousemask(ALL_MOUSE_EVENTS, NULL);
+  CommandEntry *pressCommand = NULL;
+
+  // remove mouse delay, click detection will not work
+  mouseinterval(0);
+  // removes key delay, will cause issues in processing escape codes
+  ESCDELAY = 0;
 
   int opt;
   CommandEntry *command = NULL;
 
   while (!command) {
+    // getch is broken for mouse input for some reason so use wgetch
     opt = wgetch(display);
     if (opt == 27) {
       break;
@@ -184,8 +191,15 @@ int main(int argc, char *argv[]) {
 
     case KEY_MOUSE:
       if (getmouse(&mevent) == OK) {
-        if (mevent.bstate & BUTTON1_CLICKED) {
-          command = getCommandMouse(&config, mevent.y, mevent.x);
+        // check if mouse press and release on same command
+        if (mevent.bstate & BUTTON1_PRESSED) {
+          pressCommand = getCommandMouse(&config, mevent.y, mevent.x);
+        } else if (mevent.bstate & BUTTON1_RELEASED) {
+          CommandEntry *releaseCommand =
+              getCommandMouse(&config, mevent.y, mevent.x);
+          if (pressCommand == releaseCommand) {
+            command = releaseCommand;
+          }
         }
       }
       break;
