@@ -4,6 +4,11 @@ Configurable ncurses based TUI dashboard for systems like a power menu or contro
 
 ![Screenshot of simpleboard utility](/simpleboard.jpg?raw=true)
 
+Features:
+- Customizable appearance
+- Bind any system command to a hotkey
+- Mouse support
+
 ## Installation
 
 1. dependencies: `c standard library, ncurses, bash`
@@ -71,4 +76,4 @@ In my testing terminal based applications seem to not work with static window ru
 
 `make debug` will output `./bin/simpleboard_debug`, which is compiled with the `-g`flag
 
-`make test` will output `./bin/test`, unit tests created using the [acutest](https://github.com/mity/acutest) framework.
+`make test` will output `./bin/readConfig_test`, unit tests created using the [acutest](https://github.com/mity/acutest) framework.
