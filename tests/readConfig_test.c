@@ -19,6 +19,8 @@ void defaultConfig(void) {
   TEST_CHECK(!strcmp(config.preference.titleColor, "red"));
   TEST_CHECK(config.preference.border == 1);
   TEST_CHECK(!strcmp(config.preference.preCommand, ""));
+  TEST_CHECK(config.preference.exit == 1);
+  TEST_CHECK(!strcmp(config.preference.name, "simpleboard"));
 
   freeConfig(&config);
 }
@@ -39,6 +41,8 @@ void emptyConfig(void) {
   TEST_CHECK(!strcmp(config.preference.titleColor, "red"));
   TEST_CHECK(config.preference.border == 1);
   TEST_CHECK(!strcmp(config.preference.preCommand, ""));
+  TEST_CHECK(config.preference.exit == 1);
+  TEST_CHECK(!strcmp(config.preference.name, "simpleboard"));
 
   freeConfig(&config);
 }
@@ -59,6 +63,8 @@ void missingConfig(void) {
   TEST_CHECK(!strcmp(config.preference.titleColor, "red"));
   TEST_CHECK(config.preference.border == 1);
   TEST_CHECK(!strcmp(config.preference.preCommand, ""));
+  TEST_CHECK(config.preference.exit == 1);
+  TEST_CHECK(!strcmp(config.preference.name, "simpleboard"));
 
   freeConfig(&config);
 }
@@ -79,6 +85,8 @@ void customConfig(void) {
   TEST_CHECK(!strcmp(config.preference.titleColor, "blue"));
   TEST_CHECK(config.preference.border == 1);
   TEST_CHECK(!strcmp(config.preference.preCommand, "echo test"));
+  TEST_CHECK(config.preference.exit == 0);
+  TEST_CHECK(!strcmp(config.preference.name, "test Name"));
 
   TEST_CHECK(!strcmp(config.command.commands[0].name, "foo"));
   TEST_CHECK(!strcmp(config.command.commands[0].command, "echo foo"));
