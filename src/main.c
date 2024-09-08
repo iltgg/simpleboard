@@ -4,8 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-static const char *DEFAULT_NAME = "simpleboard";
-
 void setup(Config *config) {
   if (strlen(config->preference.preCommand) > 0) {
     system(config->preference.preCommand);
@@ -164,7 +162,7 @@ int main(int argc, char *argv[]) {
     return EXIT_FAILURE;
   }
 
-  printf("\033]2;%s\a", DEFAULT_NAME);
+  printf("\033]2;%s\a", config.preference.name);
 
   initscr();
   use_default_colors();

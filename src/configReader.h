@@ -5,18 +5,21 @@
 
 #define MAX_LINE 100
 #define INIT_CONIFG(C)                                                         \
-  Config C = {.command.count = 0,                                              \
-              .preference.color = "blue",                                      \
-              .preference.height = 10,                                         \
-              .preference.width = 20,                                          \
-              .preference.dynamicHeight = 0,                                   \
-              .preference.dynamicWidth = 0,                                    \
-              .preference.dynamicWidthMin = 0,                                 \
-              .preference.title = "simpleboard",                               \
-              .preference.titleColor = "red",                                  \
-              .preference.border = 1,                                          \
-              .preference.preCommand = "",                                     \
-              .preference.exit = 1}
+  Config C = {                                                                 \
+      .command.count = 0,                                                      \
+      .preference.color = "blue",                                              \
+      .preference.height = 10,                                                 \
+      .preference.width = 20,                                                  \
+      .preference.dynamicHeight = 0,                                           \
+      .preference.dynamicWidth = 0,                                            \
+      .preference.dynamicWidthMin = 0,                                         \
+      .preference.title = "simpleboard",                                       \
+      .preference.titleColor = "red",                                          \
+      .preference.border = 1,                                                  \
+      .preference.preCommand = "",                                             \
+      .preference.exit = 1,                                                    \
+      .preference.name = "simpleboard",                                        \
+  }
 
 typedef struct CommandEntry {
   char *name;
@@ -40,6 +43,7 @@ typedef struct PreferenceConfig {
   int border;
   char preCommand[MAX_LINE];
   int exit;
+  char name[MAX_LINE];
 } PreferenceConfig;
 
 typedef struct CommandConfig {

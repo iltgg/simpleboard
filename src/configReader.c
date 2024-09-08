@@ -88,6 +88,8 @@ static void addPreference(char *line, PreferenceConfig *pref) {
     strcpy(pref->preCommand, value);
   } else if (!strcmp(key, "exit")) {
     pref->exit = atoi(value);
+  } else if (!strcmp(key, "name")) {
+    strcpy(pref->name, value);
   }
 }
 
