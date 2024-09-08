@@ -15,7 +15,8 @@
               .preference.title = "simpleboard",                               \
               .preference.titleColor = "red",                                  \
               .preference.border = 1,                                          \
-              .preference.preCommand = ""}
+              .preference.preCommand = "",                                     \
+              .preference.exit = 1}
 
 typedef struct CommandEntry {
   char *name;
@@ -38,6 +39,7 @@ typedef struct PreferenceConfig {
   char titleColor[MAX_LINE];
   int border;
   char preCommand[MAX_LINE];
+  int exit;
 } PreferenceConfig;
 
 typedef struct CommandConfig {

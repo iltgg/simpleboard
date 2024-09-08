@@ -12,13 +12,20 @@ void setup(Config *config) {
   }
 }
 
-FILE *getUserConfig() {
-  const char *CONFIG_PATH = "/.config/simpleboard/simpleboard.conf";
+FILE *getUserConfig(char *file) {
+  const char *DEFAULT_FILE = "simpleboard.conf";
+  const char *CONFIG_PATH = "/.config/simpleboard/";
   const char *HOME = getenv("HOME");
-  char path[100];
+  char path[200];
 
   strcpy(path, HOME);
   strcpy(path + strlen(path), CONFIG_PATH);
+
+  if (file == NULL) {
+    strcpy(path + strlen(path), DEFAULT_FILE);
+  } else {
+    strcpy(path + strlen(path), file);
+  }
 
   return fopen(path, "r");
 }
@@ -122,22 +129,31 @@ CommandEntry *getCommandMouse(Config *config, int y, int x) {
 
 int main(int argc, char *argv[]) {
   char *configFile = NULL;
+  int argType = 0;
   for (int i = 1; i < argc; i++) {
     if (!strcmp(argv[i], "--config") || !strcmp(argv[i], "-c")) {
       i++;
       configFile = argv[i];
     }
+    if (!strcmp(argv[i], "--file") || !strcmp(argv[i], "-f")) {
+      i++;
+      argType = 1;
+      configFile = argv[i];
+    }
     if (!strcmp(argv[i], "--help") || !strcmp(argv[i], "-h")) {
       puts("Usage:\n  simpleboard [option(s)]\n\nOptions:\n  -h, --help\n    "
            "print help screen\n  -c, --config [dir]\n    specify a path to a "
-           "config file to use");
+           "config file to use\n  -f, --file [file_name]\n    specify a file "
+           "in $HOME/.config/simpleboard/");
       return EXIT_SUCCESS;
     }
   }
 
   FILE *fp;
   if (configFile == NULL) {
-    fp = getUserConfig();
+    fp = getUserConfig(NULL);
+  } else if (argType == 1) {
+    fp = getUserConfig(configFile);
   } else {
     fp = fopen(configFile, "r");
   }
@@ -174,6 +190,7 @@ int main(int argc, char *argv[]) {
   int opt;
   CommandEntry *command = NULL;
 
+INPUT:
   while (!command) {
     // getch is broken for mouse input for some reason so use wgetch
     opt = wgetch(display);
@@ -223,6 +240,10 @@ int main(int argc, char *argv[]) {
       getmaxyx(stdscr, row, col);
       mvprintw(row / 2, (col - strlen(exitMsg)) / 2, "%s", exitMsg);
       getch();
+    }
+    if (config.preference.exit != 1) {
+      command = NULL;
+      goto INPUT;
     }
   }
 

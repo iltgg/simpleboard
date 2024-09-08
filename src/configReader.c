@@ -86,6 +86,8 @@ static void addPreference(char *line, PreferenceConfig *pref) {
     pref->border = atoi(value);
   } else if (!strcmp(key, "preCommand")) {
     strcpy(pref->preCommand, value);
+  } else if (!strcmp(key, "exit")) {
+    pref->exit = atoi(value);
   }
 }
 
