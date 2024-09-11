@@ -52,12 +52,6 @@ preCommand =         (system command to run before showing anything)
 # Comments with #, must be newline
 ```
 
-### Swaylock
-
-If `daemonize` is in swaylock config or `-f` argument is passed, swaylock will red screen if terminal is closed while swaylock is running (do not know why).
-
-Pass `stay_alive` misc argument in `simpleboard.conf` to keep terminal open after executing command.
-
 ### Hyprland Window Rules
 
 To launch `simpleboard` as full screen in `Hyprland` the following command can be used:

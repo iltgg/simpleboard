@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 void setup(Config *config) {
   if (strlen(config->preference.preCommand) > 0) {
@@ -230,14 +233,15 @@ INPUT:
     strcat(noOutput, command->command);
     strcat(noOutput, "\" >/dev/null 2>&1");
 
-    system(noOutput);
-    if (!strcmp(command->misc, "stay_alive")) {
-      clear();
-      int row, col;
-      const char *exitMsg = "Welcome back! Press any key to continue...";
-      getmaxyx(stdscr, row, col);
-      mvprintw(row / 2, (col - strlen(exitMsg)) / 2, "%s", exitMsg);
-      getch();
+    pid_t pid = fork();
+    if (pid < 0) {
+      exit(EXIT_FAILURE);
+    } else if (pid == 0) { // if in fork create new session and run
+      if (setsid() < 0) {
+        exit(EXIT_FAILURE);
+      }
+      system(noOutput);
+      exit(EXIT_SUCCESS);
     }
     if (config.preference.exit != 1) {
       command = NULL;
